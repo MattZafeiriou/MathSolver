@@ -4,7 +4,7 @@ import './Home.css';
 class Home extends React.Component {
     constructor(props) {
         super(props);
-        window.history.replaceState(null, null, "/Algebra");
+        window.history.replaceState(null, "", "/Algebra");
     }
     
     render() {

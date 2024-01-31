@@ -1,16 +1,16 @@
 import React from 'react';
-import './Algebra.css';
+import './Calculus.css';
 import MathInput from '../../Components/MathInput.js';
 
-class Algebra extends React.Component {
+class Calculus extends React.Component {
     
     render() {
         return (
             <>
-                <MathInput type="Algebra" />
+                <MathInput type="Calculus" />
             </>
         );
     }
 }
 
-export default Algebra;
+export default Calculus;
