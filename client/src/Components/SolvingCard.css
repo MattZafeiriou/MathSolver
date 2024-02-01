@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+.card {
+    background-color: rgba(255, 255, 255, .6);
+    color: black;
+    margin-left: 2em;
+    border-radius: 15px;
+    margin-top: 30px;
+    height: calc(100% - 60px - 6px - 20px);
+    min-width: 350px;
+    max-width: 500px;
+    border: 3px solid var(--primary-color);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
+    font-size: .8em;
+    overflow: hidden;
+    overflow-y: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.card h1 {
+    transition-duration: .1s;
+    font-size: 1.5em;
+    padding: 10px 0px;
+    margin: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+    margin-left: 5%;
+    width: 90%;
+}
+
+.card h1:hover {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.equation {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    min-width: 100px;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.equation:hover {
+    cursor: pointer;
+}
+
+.equation:active {
+    background-color: var(--primary-color-hover);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+}
+
+.explanation {
+    margin-left: 1em;
+    font-size: 1em;
+    line-height: 1em;
+}
+
+.fa-copy {
+    margin-left: 11px;
+    font-size: .9em;
+    color: white;
+}
+
+.fa-copy:hover {
+    cursor: pointer;
+    color: rgba(255, 255, 255, .6)
+}
+
+ /* The snackbar - position it at the bottom and in the middle of the screen */
+ #snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: var(--primary-color-hover);
+    color: #fff;
+    text-align: center;
+    border-radius: 10px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+  }
+  
+  /* Show the snackbar when clicking on a button (class added with JavaScript) */
+  #snackbar.show {
+    visibility: visible; /* Show the snackbar */
+    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+    However, delay the fade out process for 2.5 seconds */
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+  
+  /* Animations to fade the snackbar in and out */
+  @-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+  }
+  
+  @keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+  }
+  
+  @-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+  }
+  
+  @keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+  } 

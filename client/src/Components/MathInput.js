@@ -1,5 +1,6 @@
 import React from 'react';
 import './MathInput.css';
+import SolvingCard from './SolvingCard.js'
 
 class MathInput extends React.Component {
     
@@ -46,6 +47,12 @@ class MathInput extends React.Component {
             <div className='math_input'>
                 <div className='type'>
                     <h1>{this.type}</h1>
+                </div>
+                <div className='cards'>
+                    <SolvingCard />
+                    <SolvingCard />
+                    <SolvingCard />
+                    <SolvingCard />
                 </div>
                 <div className='input'>
                     <form>
