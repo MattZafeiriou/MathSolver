@@ -43,6 +43,7 @@
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+    margin-left: 3px;
 }
 
 .equation:hover {

@@ -1,6 +1,7 @@
 import React from 'react';
 import './MathInput.css';
 import SolvingCard from './SolvingCard.js'
+import formatExpression from '../Formatter.js';
 
 class MathInput extends React.Component {
     
@@ -12,16 +13,27 @@ class MathInput extends React.Component {
     openMathKeyboard(e) {
         document.querySelector('.input').classList.add('input_keyboard');
         document.querySelector('.keyboard').classList.add('keyboard_active');
+        document.querySelector('.cards').classList.add('cards_keyboard');
         e.stopPropagation();
     }
 
     closeMathKeyboard() {
         document.querySelector('.input').classList.remove('input_keyboard');
         document.querySelector('.keyboard').classList.remove('keyboard_active');
+        document.querySelector('.cards').classList.remove('cards_keyboard');
     }
 
     componentDidMount() {
         document.addEventListener('click', this.closeMathKeyboard);
+    }
+
+    submitMath(e) {
+        e.preventDefault();
+        const math = e.target.previousSibling.value;
+        fetch('http://localhost:9000/math?equation=' + formatExpression(math), {
+        }).then(res => res.text()).then(data => {
+            alert(data);
+        });
     }
 
     render() {
@@ -50,18 +62,31 @@ class MathInput extends React.Component {
                 </div>
                 <div className='cards'>
                     <SolvingCard />
-                    <SolvingCard />
-                    <SolvingCard />
-                    <SolvingCard />
                 </div>
                 <div className='input'>
                     <form>
                         <input type="text" autoFocus onClick={this.openMathKeyboard} placeholder={placeholder} />
-                        <button type="button" onClick={(e) => {e.stopPropagation();}} >Submit</button>
+                        <button type="button" onClick={(e) => {
+                            this.submitMath(e);
+                        }} >Submit</button>
                     </form>
                 </div>
                 <div className='keyboard' onClick={(e) => {e.stopPropagation();}}>
-                    <h1>Oh hey im a key</h1>
+                    <div className='row'>
+                        <h1>+</h1>
+                        <h1>-</h1>
+                        <h1>*</h1>
+                        <h1>/</h1>
+                        <h1>x</h1>
+                        <h1>x</h1>
+                        <h1>x</h1>
+                        <h1>x</h1>
+                        <h1>x</h1>
+                        <h1>x</h1>
+                        <h1>k</h1>
+                        <h1>ln</h1>
+                        <h1>e</h1>
+                    </div>
                 </div>
             </div>
             </>

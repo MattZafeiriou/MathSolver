@@ -13,13 +13,14 @@ class SolvingCard extends React.Component {
         return (
             <h1><span className='equation'  onClick={
                 (e) => {
-                    const text = e.currentTarget.parentElement.textContent;
+                    const text = e.currentTarget.textContent;
                     navigator.clipboard.writeText(text);
+
                     var x = document.getElementById("snackbar");
                     x.className = "show";
                     setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
                 }
-            }>x + 5 = 0<i class="fa-regular fa-copy"></i></span> <span className='explanation'>Explanation</span></h1>
+            }>x + 5 = 0<i class="fa-regular fa-copy"></i></span><span className='explanation'>Explanation</span></h1>
         );
     }
 
