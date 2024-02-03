@@ -1,7 +1,5 @@
 So when a user submits a math form it should be fetched from the client to the server with some form.
 
-When a variable: {var:%name%} for example {var:x}
-When number: %number%
-When + - / * = stays the same
-
-Example: x+5=0 --> {var:x}+5=0
+When a variable: {var} for example x -> {var}
+Assuming constant names are one-character only (ab = a*b)
+Logarithm: {log}
