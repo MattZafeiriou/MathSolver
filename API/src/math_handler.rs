@@ -1,4 +1,4 @@
-const EQUATION : &str = "a*(b+c*(d+e))=0";
+const EQUATION : &str = "-a*(b+c-d)=0";
 
 /*
  * This function takes an equation, moves everything to the left side
@@ -115,21 +115,42 @@ fn handle_part(part: &str, coefficient: &str) -> String {
         let part = &mut parts[i];
         let operator = &mut operators[i];
 
-        println!("Part: {} Operator: {}", part, operator);
         simplify_part(part);
 
         parts[i] = part.to_string();
         operators[i] = *operator;
     }
 
-
+    println!("{:?} {:?}", parts, operators);
     // finalise the part
     let mut final_part: String = String::new();
     for i in 0..parts.len() {
+        let mut reverse = false;
         if i < operators.len() && (operators[i] != '+' || i > 0) {
-            final_part += operators[i].to_string().as_str();
+            if operators[i] == '-' {
+                reverse = true;
+            } else {
+                final_part += operators[i].to_string().as_str();
+            }
         }
-        final_part += parts[i].as_str();
+        if (reverse)
+        {
+            // check if first character is +, - or not operator
+            if !(parts[i].starts_with('+') || parts[i].starts_with('-'))
+            {
+                parts[i].insert(0, '+');
+            }
+            // switch all + with - and all - with +
+            let partt: String = parts[i].chars().map(|c|
+                match c {
+                    '+' => '-',
+                    '-' => '+',
+                    _ => c
+                }).collect();
+            final_part += partt.as_str();
+        } else {
+            final_part += parts[i].as_str();
+        }
     }
 
     final_part
@@ -192,12 +213,16 @@ fn simplify_part(part: &mut String) {
     }
 
     for i in 0..(multiply_parts.len() - 1) {
-        let idk = multiply_two_parts(multiply_parts[i].as_str(), multiply_parts[i + 1].as_str());
-        println!("{:?}", idk);
-        *part = idk;
+        let idk: String;
+        if multiply_operators[i] == '/' {
+            idk = divide_two_parts(multiply_parts[i].as_str(), multiply_parts[i + 1].as_str());
+        } else {
+            idk = multiply_two_parts(multiply_parts[i].as_str(), multiply_parts[i + 1].as_str());
+        }
+        multiply_parts[i + 1] = idk;
     }
-
-    println!("Multiply parts: {:?} Start: {:?}", multiply_parts, part);
+    *part = multiply_parts[multiply_parts.len()-1].clone();
+    
 }
 
 fn multiply_two_parts(part1: &str, part2: &str) -> String {
@@ -237,12 +262,18 @@ fn multiply_two_parts(part1: &str, part2: &str) -> String {
                 final_s += (operator2.to_string() + part2.as_str()).as_str();
             } else {
                 let formatted = format!("{}*{}", part, part2);
+
                 let part2 = &mut formatted.as_str();
                 final_s += (operator2.to_string() + part2).as_str();
             }
         }
     }
     final_s
+}
+
+fn divide_two_parts(part1: &str, part2: &str) -> String
+{
+    format!("{}/({})", part1, part2)
 }
 
 // fn evaluate_equation(equation: &str) -> f64 {
