@@ -1,4 +1,4 @@
-const EQUATION : &str = "2*a*{var}*{var}*3+5.2*3/10=3";
+const EQUATION : &str = "a*(b+c*(d+e))=0";
 
 /*
  * This function takes an equation, moves everything to the left side
@@ -63,24 +63,26 @@ pub fn handle_math_equation(equation: String) -> String {
         return "Something went wrong! Lengths are not the same.".to_string();
     }
     
-    // // connect the parts and operators into a string
-    // let mut parts_str = String::new();
-    // for i in 0..parts.len() {
-    //     parts_str += (operators[i].to_string().as_str().to_owned() + parts[i]).as_str();
-    // }
-    // println!("Parts: {:?} Operators: {:?}", parts, operators);
-    // let b = handle_part(&mut parts_str, "1");
-    // println!("Parts: {:?}", b);
+    // connect the parts and operators into a string
+    let mut parts_str = String::new();
+    for i in 0..parts.len() {
+        parts_str += (operators[i].to_string().as_str().to_owned() + parts[i].as_str()).as_str();
+    }
+    let b = handle_part(&mut parts_str, "1");
 
+    println!("Final: {}", b);
     // Print the results
-    let test = multiply_two_parts("a-b", "-3");
+    
 
     answer
 }
 
 /*
- * This function takes a part of the equation and a coefficient and
- * simplifies the part.
+ * This function takes a part of the equation and a coefficient
+ * removes unnecessary parenthesis and spaces
+ * multiplies the part by the coefficient
+ * splits the function into parts and operators of + and -
+ * and simplifies each part
 */
 fn handle_part(part: &str, coefficient: &str) -> String {
     // if first char is + remove it
@@ -89,33 +91,21 @@ fn handle_part(part: &str, coefficient: &str) -> String {
         part = remaining;
     }
 
-    let mut operators = split_operators(part, vec!['+', '-']);
-    let parts = split_parts(part, vec!['+', '-']);
+    // if part is in parenthesis remove them
+    if part.chars().nth(0).unwrap() == '(' && part.chars().nth(part.len() - 1).unwrap() == ')' {
+        part = &part[1..part.len() - 1];
+    }
 
-    let mut parts: Vec<String> = parts.iter().map(|s| s.to_string()).collect();
-
+    let mut part = part.to_string();
     // multiply each part by coefficient
     if coefficient != "1" {
-        for i in 0..parts.len() {
-            let part = &mut parts[i];
-            let num = part.parse::<f32>();
-            if num.is_ok() {
-                let coefficient_num = coefficient.parse::<f32>();
-                // check if coefficient is a number
-                if coefficient_num.is_ok()  {
-                    let num = num.unwrap();
-                    let new_num = num * coefficient_num.unwrap();
-                    *part = new_num.to_string();
-                } else {
-                    *part = format!("{}*{}", coefficient, part);
-                }
-            } else {
-                *part = format!("{}*{}", coefficient, part);
-            }
-        }
+        part = multiply_two_parts(part.as_str(), coefficient);
     }
+    let part = part.as_str();
+
+    let mut operators = split_operators(part, vec!['+', '-']);
+    let mut parts = split_parts(part, vec!['+', '-']);
     
-    let mut parts: Vec<String> = parts.iter().map(|s| s.to_string()).collect();
     if parts.len() == operators.len() + 1 {
         operators.insert(0, '+');
     }
@@ -125,6 +115,7 @@ fn handle_part(part: &str, coefficient: &str) -> String {
         let part = &mut parts[i];
         let operator = &mut operators[i];
 
+        println!("Part: {} Operator: {}", part, operator);
         simplify_part(part);
 
         parts[i] = part.to_string();
@@ -144,19 +135,45 @@ fn handle_part(part: &str, coefficient: &str) -> String {
     final_part
 }
 
-fn split_parts(equation: &str, operators: Vec<char>) -> Vec<&str> {
-    let parts: Vec<&str> = equation
-        .split(|c| operators.contains(&c))
-        .collect();
+fn split_parts(equation: &str, operators: Vec<char>) -> Vec<String> {
+    let mut parts: Vec<String> = Vec::new();
+    let mut part = String::new();
+    let mut parenthesis: i8 = 0;
+    for i in 0..equation.len() {
+        let c = equation.chars().nth(i).unwrap();
+        if c == '(' {
+            parenthesis += 1;
+        } else if c == ')' {
+            parenthesis -= 1;
+        }
+        if operators.contains(&c) && parenthesis == 0 {
+            if i > 0 {
+                parts.push(part.clone());
+                part = String::new();
+            }
+        } else {
+            part += c.to_string().as_str();
+        }
+    }
+    parts.push(part.clone());
     parts
 }
 
 fn split_operators(equation: &str, operators: Vec<char>) -> Vec<char> {
-    let operators: Vec<char> = equation
-        .chars()
-        .filter(|c| operators.contains(c))
-        .collect();
-    operators
+    let mut operators_: Vec<char> = Vec::new();
+    let mut parenthesis: i8 = 0;
+    for i in 0..equation.len() {
+        let c = equation.chars().nth(i).unwrap();
+        if c == '(' {
+            parenthesis += 1;
+        } else if c == ')' {
+            parenthesis -= 1;
+        }
+        if operators.contains(&c) && parenthesis == 0 {
+            operators_.push(c);
+        }
+    }
+    operators_
 }
 
 fn simplify_part(part: &mut String) {
@@ -164,59 +181,23 @@ fn simplify_part(part: &mut String) {
     *part = part.replace(" ", "").to_string();
 
     // split by * and /
-    let multiply_parts = split_parts(part.as_str(), vec!['*', '/']);
+    let mut multiply_parts = split_parts(part.as_str(), vec!['*', '/']);
     let multiply_operators = split_operators(part.as_str(), vec!['*', '/']);
 
-    let mut multiply_parts: Vec<String> = multiply_parts.iter().map(|s| s.to_string()).collect();
-    let mut product: f64 = 1f64;
-    let mut product_var: String = String::new();
-
-    if multiply_parts.len() > 1 {
-        // simplify the multiply parts
-        for i in 0..multiply_parts.len() {
-            let m_part = &mut multiply_parts[i];
-            let num = m_part.parse::<f64>();
-            if num.is_ok() {
-                let num = num.unwrap();
-                if i == 0 {
-                    product = num;
-                } else {
-                    if multiply_operators[i - 1] == '*' {
-                        product *= num;
-                    } else if multiply_operators[i - 1] == '/' {
-                        product /= num;
-                    }
-                }
-                product = (product * 1000f64).round() / 1000f64;
-                multiply_parts[i] = product.to_string();
-            } else {
-                if i == 0 {
-                    product_var = m_part.to_string();
-                } else {
-                    if multiply_operators[i - 1] == '*' {
-                        product_var = format!("{}*{}", product_var, m_part);
-                    } else if multiply_operators[i - 1] == '/' {
-                        product_var = format!("{}/{}", product_var, m_part);
-                    }
-                }
-            }
-        }
-    } else {
-        let num = multiply_parts[0].parse::<f64>();
-        if num.is_ok() {
-            product = num.unwrap();
-        } else {
-            product_var = multiply_parts[0].to_string();
+    for i in 0..multiply_parts.len() {
+        let part = &mut multiply_parts[i];
+        if part.contains(['(', ')'].as_ref()) {
+            *part = handle_part(part, "1");
         }
     }
 
-    let mut final_product: String = product.to_string();
-
-    if product_var.len() > 0 {
-        final_product += product_var.as_str();
+    for i in 0..(multiply_parts.len() - 1) {
+        let idk = multiply_two_parts(multiply_parts[i].as_str(), multiply_parts[i + 1].as_str());
+        println!("{:?}", idk);
+        *part = idk;
     }
 
-    *part = final_product.to_string();
+    println!("Multiply parts: {:?} Start: {:?}", multiply_parts, part);
 }
 
 fn multiply_two_parts(part1: &str, part2: &str) -> String {
@@ -231,14 +212,10 @@ fn multiply_two_parts(part1: &str, part2: &str) -> String {
     if operators_2.len() == (parts_2.len() - 1) {
         operators_2.insert(0, '+');
     }
-    println!("Parts 1: {:?} Parts 2: {:?}", parts_1, parts_2);
-    println!("Operators 1: {:?} Operators 2: {:?}", operators_1, operators_2);
-    println!("Lengths: {} {}", parts_1.len(), operators_1.len());
     let mut final_s = String::new();
     for i in 0..parts_1.len() {
         let part = &mut parts_1[i];
         let operator = &mut operators_1[i];
-        println!("Part: {} Operator: {}", part, operator);
         for j in 0..parts_2.len() {
             let part2 = &mut parts_2[j];
             let mut operator2 = operators_2[j];
@@ -265,7 +242,6 @@ fn multiply_two_parts(part1: &str, part2: &str) -> String {
             }
         }
     }
-    println!("Final: {}", final_s);
     final_s
 }
 
