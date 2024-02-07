@@ -1,4 +1,4 @@
-const EQUATION : &str = "-a*(b+c-d)=0";
+const EQUATION : &str = "(a+1)*6+3/5=0";
 
 /*
  * This function takes an equation, moves everything to the left side
@@ -68,9 +68,13 @@ pub fn handle_math_equation(equation: String) -> String {
     for i in 0..parts.len() {
         parts_str += (operators[i].to_string().as_str().to_owned() + parts[i].as_str()).as_str();
     }
-    let b = handle_part(&mut parts_str, "1");
+    let mut b = handle_part(&mut parts_str, "1");
 
-    println!("Final: {}", b);
+    if b.starts_with('+')
+    {
+        b = b[1..b.len()].to_string();
+    }
+    println!("Final: {}=0", b);
     // Print the results
     
 
@@ -105,7 +109,6 @@ fn handle_part(part: &str, coefficient: &str) -> String {
 
     let mut operators = split_operators(part, vec!['+', '-']);
     let mut parts = split_parts(part, vec!['+', '-']);
-    
     if parts.len() == operators.len() + 1 {
         operators.insert(0, '+');
     }
@@ -121,7 +124,6 @@ fn handle_part(part: &str, coefficient: &str) -> String {
         operators[i] = *operator;
     }
 
-    println!("{:?} {:?}", parts, operators);
     // finalise the part
     let mut final_part: String = String::new();
     for i in 0..parts.len() {
@@ -273,7 +275,16 @@ fn multiply_two_parts(part1: &str, part2: &str) -> String {
 
 fn divide_two_parts(part1: &str, part2: &str) -> String
 {
-    format!("{}/({})", part1, part2)
+    let num1 = part1.parse::<f64>();
+    let num2 = part2.parse::<f64>();
+    if num1.is_ok() && num2.is_ok(){
+        let num1 = num1.unwrap();
+        let num2 = num2.unwrap();
+        let new_num = num1 / num2;
+        return new_num.to_string()
+    } else {
+        return format!("{}/({})", part1, part2)
+    }
 }
 
 // fn evaluate_equation(equation: &str) -> f64 {
